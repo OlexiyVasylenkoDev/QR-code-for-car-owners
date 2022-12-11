@@ -1,0 +1,10 @@
+<form method="post" style="width: 25em; align-content: center; margin: auto;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <button type="submit" value="Login">Login</button>
+</form>
+<br>
+<p class="mb-0 text-white-50">Haven`t registered yet?<br><a href="{% url "core:registration" %}">You can do it
+    right now!</a></p>
+<br>

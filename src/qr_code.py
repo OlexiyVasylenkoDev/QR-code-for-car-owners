@@ -11,7 +11,7 @@
 #         QRCode.objects.create(hash="Hash", password="Password")
 #         # name = fake.word().capitalize()
 #         img = qrcode.make(f"{i}")
-#         img.save(f"static/qr_codes/{i}.png")
+#         img.save(f"media/qr_codes/{i}.png")
 #     return HttpResponse("")
 #
 #

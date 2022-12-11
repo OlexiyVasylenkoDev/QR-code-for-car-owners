@@ -1,4 +1,5 @@
 .idea/
+src/static/qr_codes
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

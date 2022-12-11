@@ -1,0 +1,16 @@
+{#<section class="about-section text-center">#}
+{#    <form enctype="multipart/form-data" action="{% url "core:Registration" %}" method="post" style="width: 25em;#}
+{#             align-content: center#}
+{#             ; margin: auto;#}
+{#    "> {% csrf_token %}#}
+{#        {{ form.as_p }}#}
+{#        <br>#}
+{#        <button type="submit">Submit</button>#}
+{#    </form>#}
+{#</section>#}
+
+<form method="post" style="width: 25em; align-content: center; margin: auto;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+</form>

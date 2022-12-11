@@ -57,7 +57,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
+    def __str__(self):
+        return str(self.phone)
+
 
 class QRCode(models.Model):
     hash = models.CharField(max_length=256, primary_key=True, unique=True, null=False, blank=False)
     password = models.CharField(_("password"), max_length=128)
+    is_active = models.BooleanField(_("active"), default=False)
+
+    def __str__(self):
+        return self.hash
