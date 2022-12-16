@@ -3,6 +3,7 @@ from uuid import uuid4
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from phonenumber_field.modelfields import PhoneNumberField
@@ -23,6 +24,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     telegram = models.URLField(_("telegram"), null=True, blank=True)
     whatsapp = models.URLField(_("whatsapp"), null=True, blank=True)
     viber = models.URLField(_("viber"), null=True, blank=True)
+    last_login = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
