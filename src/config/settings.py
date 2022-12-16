@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+j5fbjw5rv&nuo%(^f#@3^x^lw!!**5!d1@-hcn4pt%g6a&f08
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'core',
 ]
 
@@ -86,6 +87,9 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'core.CustomUser'
+
+LOGIN_URL = "core:login"
+LOGIN_REDIRECT_URL = "core:profile"
 
 AUTH_PASSWORD_VALIDATORS = [
     {

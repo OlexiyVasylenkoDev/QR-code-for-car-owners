@@ -40,4 +40,4 @@ class CustomAuthenticationForm(AuthenticationForm):
     username/password logins.
     """
 
-    username = UsernameField(label="Phone number", widget=forms.TextInput(attrs={"autofocus": True}))
+    username = UsernameField(label="Phone", widget=forms.TextInput(attrs={"autofocus": True}))

@@ -1,10 +1,41 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <title>QR-Code</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static "assets/favicon.ico" %}"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
 </head>
 <body>
-
+<section id="hero">
+    <div class="hero-container">
+        <div class="hero-container-center">
+            {% if user.is_authenticated %}
+                <li>
+                    <ul>
+                        <li><a href="{% url "core:logout" %}">Logout</a></li>
+                        <li><a href="{% url "core:profile" %}">Profile</a>
+                        </li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{% url "core:login" %}">Login</a></li>
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+</section>
 </body>
 </html>

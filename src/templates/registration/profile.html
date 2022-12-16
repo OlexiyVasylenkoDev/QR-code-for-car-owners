@@ -1,0 +1,10 @@
+{% extends "index/index.html" %}
+{% block content %}
+    {{ user.phone }}
+    <br>
+    {% if qr_codes %}
+        {% for qr_code in qr_codes %}
+            {{ qr_code.hash }}
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

@@ -19,27 +19,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         db_index=True,
         editable=False,
     )
-    phone = PhoneNumberField(
-        _("phone"),
-        unique=True,
-        null=True,
-        blank=True,
-    )
-    telegram = models.URLField(
-        _("telegram"),
-        null=True,
-        blank=True,
-    )
-    whatsapp = models.URLField(
-        _("whatsapp"),
-        null=True,
-        blank=True,
-    )
-    viber = models.URLField(
-        _("viber"),
-        null=True,
-        blank=True,
-    )
+    phone = PhoneNumberField(_("phone"), unique=True, null=True, blank=True)
+    telegram = models.URLField(_("telegram"), null=True, blank=True)
+    whatsapp = models.URLField(_("whatsapp"), null=True, blank=True)
+    viber = models.URLField(_("viber"), null=True, blank=True)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
@@ -62,9 +45,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class QRCode(models.Model):
-    hash = models.CharField(max_length=256, primary_key=True, unique=True, null=False, blank=False)
+    hash = models.CharField(_("hash"), max_length=256, primary_key=True, unique=True, null=False, blank=False)
     password = models.CharField(_("password"), max_length=128)
     is_active = models.BooleanField(_("active"), default=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    message = models.CharField(_("message"), max_length=140, default=None, null=True, blank=True)
 
     def __str__(self):
         return self.hash
