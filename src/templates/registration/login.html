@@ -1,9 +1,10 @@
 {% extends "index/index.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 
 <form method="post" style="width: 25em; align-content: center; margin: auto;">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <br>
     <button type="submit" value="Login">Login</button>
 </form>

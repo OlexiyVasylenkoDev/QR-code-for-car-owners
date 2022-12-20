@@ -33,6 +33,7 @@ class QRCodeActivationView(FormView):
 
     def form_valid(self, form):
         self.request.session["qr"] = self.kwargs["hash"]
+        print(self.request.session.items())
         qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
         if qr_code.password == form.data["password"]:
             if self.request.user.is_authenticated:
@@ -41,7 +42,8 @@ class QRCodeActivationView(FormView):
                 qr_code.save()
             return super().form_valid(form)
         else:
-            return HttpResponse("Oops! Something went wrong")
+            """Add message for wrong password"""
+            return super().form_invalid(form)
 
 
 class QRCodeTemplateView(TemplateView):
@@ -135,12 +137,12 @@ class Logout(LogoutView):
 
 @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
-    for i in range(5):
+    for i in range(1):
         hash_uuid = uuid.uuid4
-        hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")
+        hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")[21:]
         QRCode.objects.create(hash=hash, password=fake.password(length=10))
         data = f"http://127.0.0.1:3456/{hash}"
         img = make(data)
-        img_name = f"{hash[21:40]}.png"
+        img_name = f"{hash}.png"
         img.save(str(settings.STATICFILES_DIRS[0]) + '/qr_codes/' + img_name)
     return HttpResponse("QR-codes generated!")

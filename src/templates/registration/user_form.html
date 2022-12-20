@@ -1,18 +1,10 @@
-{#<section class="about-section text-center">#}
-{#    <form enctype="multipart/form-data" action="{% url "core:Registration" %}" method="post" style="width: 25em;#}
-{#             align-content: center#}
-{#             ; margin: auto;#}
-{#    "> {% csrf_token %}#}
-{#        {{ form.as_p }}#}
-{#        <br>#}
-{#        <button type="submit">Submit</button>#}
-{#    </form>#}
-{#</section>#}
 {% extends "index/index.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
+
 <form method="post" style="width: 25em; align-content: center; margin: auto;">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <button type="submit">Register</button>
 </form>
 {% endblock content %}
