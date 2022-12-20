@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 
 import django_heroku
-django_heroku.settings(locals())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+j5fbjw5rv&nuo%(^f#@3^x^lw!!**5!d1@-hcn4pt%g6a&f08'
+# SECRET_KEY = 'django-insecure-+j5fbjw5rv&nuo%(^f#@3^x^lw!!**5!d1@-hcn4pt%g6a&f08'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -130,6 +129,7 @@ USE_TZ = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
@@ -137,3 +137,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+django_heroku.settings(locals())
