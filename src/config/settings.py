@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+j5fbjw5rv&nuo%(^f#@3^x^lw!!**5!d1@-hcn4pt%g6a&f08
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["https://qr-code-for-car-owners.azurewebsites.net", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
