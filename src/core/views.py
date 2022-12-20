@@ -1,4 +1,3 @@
-import pprint
 import uuid
 
 from django.conf import settings
@@ -10,7 +9,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, TemplateView, FormView
-from multi_form_view import MultiModelFormView
 from qrcode import make
 
 from core.forms import RegistrationForm, CustomAuthenticationForm, QRPasswordForm
@@ -34,13 +32,13 @@ class QRCodeActivationView(FormView):
     success_url = reverse_lazy("core:login")
 
     def form_valid(self, form):
+        self.request.session["qr"] = self.kwargs["hash"]
         qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
         if qr_code.password == form.data["password"]:
-            if self.request.user:
+            if self.request.user.is_authenticated:
                 qr_code.is_active = True
                 qr_code.user = self.request.user
                 qr_code.save()
-                self.success_url = reverse_lazy("core:profile")
             return super().form_valid(form)
         else:
             return HttpResponse("Oops! Something went wrong")
@@ -52,7 +50,6 @@ class QRCodeTemplateView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.extra_context = {"qr": QRCode.objects.get(hash=kwargs["hash"])}
-        print(self.extra_context)
         return self.render_to_response(self.extra_context)
 
 
@@ -78,7 +75,6 @@ class Profile(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         self.extra_context = {"user": self.request.user,
                               "qr_codes": QRCode.objects.filter(user=self.request.user) or None}
-        print(self.extra_context)
         return self.render_to_response(self.extra_context)
 
 
@@ -92,17 +88,45 @@ class Registration(CreateView):
             return HttpResponseRedirect(reverse("core:profile"))
         return super().get(request, *args, **kwargs)
 
+    def form_invalid(self, form):
+        print(self.request.session.items())
+        self.render_to_response(self.get_context_data(form=form))
+
     def form_valid(self, form):
+        print(self.request.session.items())
+
         self.object = form.save(commit=True)
         self.object.is_active = True
         self.object.save()
-        login(self.request, self.object, backend="core.auth_backend.AuthBackend")
+
+        login(self.request, self.object)
+
+        if "qr" in self.request.session.keys():
+            qr = QRCode.objects.get(hash=self.request.session["qr"])
+            qr.is_active = True
+            qr.user = self.request.user
+            qr.save()
+            self.request.session.pop("qr")
+
         return HttpResponseRedirect(self.success_url)
 
 
 class Login(LoginView):
     authentication_form = CustomAuthenticationForm
     redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        print(self.request.session.items())
+        login(self.request, form.get_user())
+
+        if "qr" in self.request.session.keys():
+            qr = QRCode.objects.get(hash=self.request.session["qr"])
+            qr.is_active = True
+            qr.user = self.request.user
+            qr.save()
+            self.request.session.pop("qr")
+        print(self.request.session.items())
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class Logout(LogoutView):
@@ -115,73 +139,8 @@ def generate_qr(request):
         hash_uuid = uuid.uuid4
         hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")
         QRCode.objects.create(hash=hash, password=fake.password(length=10))
-        data = f"http://127.0.0.1:3456/view/{hash}"
+        data = f"http://127.0.0.1:3456/{hash}"
         img = make(data)
         img_name = f"{hash[21:40]}.png"
         img.save(str(settings.STATICFILES_DIRS[0]) + '/qr_codes/' + img_name)
     return HttpResponse("QR-codes generated!")
-
-
-class SchoolDataLogin(MultiModelFormView):
-    form_classes = {
-        'qr_form': QRPasswordForm,
-        'user_form': CustomAuthenticationForm,
-    }
-    template_name = 'home_login.html'
-
-    def post(self, request, *args, **kwargs):
-        self.extra_context = {"hash": self.kwargs["hash"]}
-        return self.render_to_response(self.extra_context)
-
-    def forms_valid(self, forms):
-        print(self.kwargs)
-        qr = forms['qr_form']
-        user = forms['user_form'].save(commit=True)
-
-        qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
-
-        user.is_active = True
-        user.save()
-
-        login(self.request, user, backend="core.auth_backend.AuthBackend")
-
-        if qr_code.password == qr.data["password"]:
-            qr_code.is_active = True
-            qr_code.user = self.request.user
-            qr_code.save()
-            self.success_url = reverse_lazy("core:index")
-            return HttpResponseRedirect(reverse_lazy("core:index"))
-        else:
-            return HttpResponse("Oops! Something went wrong")
-
-
-class SchoolDataRegistration(MultiModelFormView):
-    form_classes = {
-        'qr_form': QRPasswordForm,
-        'user_form': RegistrationForm,
-    }
-    template_name = 'home_registration.html'
-
-    def post(self, request, **kwargs):
-        self.extra_context = {"hash": self.kwargs["hash"]}
-        return self.render_to_response(self.extra_context)
-
-    def forms_valid(self, forms):
-        qr = forms['qr_form']
-        user = forms['user_form'].save(commit=True)
-
-        qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
-
-        user.is_active = True
-        user.save()
-
-        login(self.request, user, backend="core.auth_backend.AuthBackend")
-
-        if qr_code.password == qr.data["password"]:
-            qr_code.is_active = True
-            qr_code.user = self.request.user
-            qr_code.save()
-            self.success_url = reverse_lazy("core:index")
-            return HttpResponseRedirect(reverse_lazy("core:index"))
-        else:
-            return HttpResponse("Oops! Something went wrong")
