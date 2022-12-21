@@ -25,7 +25,7 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["qr-code-for-car-owners.herokuapp.com", "localhost"]
+ALLOWED_HOSTS = ["https://qr-code-for-car-owners.herokuapp.com", "localhost"]
 
 # Application definition
 
