@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["qr-code-for-car-owners.herokuapp.com", "localhost"]
 
@@ -89,7 +89,7 @@ AUTH_USER_MODEL = 'core.CustomUser'
 LOGIN_URL = "core:login"
 LOGIN_REDIRECT_URL = "core:profile"
 
-CSRF_TRUSTED_ORIGINS = ['https://qr-code-for-car-owners.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = ['qr-code-for-car-owners.herokuapp.com']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
