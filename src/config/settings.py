@@ -89,6 +89,8 @@ AUTH_USER_MODEL = 'core.CustomUser'
 LOGIN_URL = "core:login"
 LOGIN_REDIRECT_URL = "core:profile"
 
+CSRF_TRUSTED_ORIGINS = ['https://qr-code-for-car-owners.herokuapp.com']
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
