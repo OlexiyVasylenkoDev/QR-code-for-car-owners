@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["qr-code-for-car-owners.herokuapp.com", "localhost"]
 
@@ -133,6 +133,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = "/static/"
+
 django_heroku.settings(locals())
 
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
