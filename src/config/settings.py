@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'core',
 ]
-#
+# Hello There!
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
