@@ -141,12 +141,12 @@ class Logout(LogoutView):
 
 @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
-    for i in range(10000):
+    for i in range(1000):
         hash_uuid = uuid.uuid4
         hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")[21:]
         QRCode.objects.create(hash=hash, password=fake.password(length=10))
         print(i)
-        data = f"https://{settings.ALLOWED_HOSTS[0]}/{hash}"
+        data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
         img.save(str(settings.STATICFILES_DIRS[0]) + '/qr_codes/' + img_name)
