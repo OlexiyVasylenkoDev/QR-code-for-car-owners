@@ -12,5 +12,5 @@ urlpatterns = [
     path('profile/', Profile.as_view(), name="profile"),
     path('generate_qr/', generate_qr, name="generate_qr"),
 
-    path('<str:hash>/', QRCodeView.as_view(), name="qr_code_view"),
+    path('qr/<str:hash>/', QRCodeView.as_view(), name="qr_code_view"),
 ]
