@@ -28,7 +28,7 @@
                     </ul>
                 </li>
             {% else %}
-                <li><a href="{% url "core:login" %}">Login</a></li>
+                <a href="{% url "core:login" %}">Login</a>
             {% endif %}
             {% block content %}
             {% endblock content %}

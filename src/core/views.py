@@ -151,5 +151,3 @@ def generate_qr(request):
         img_name = f"{hash}.png"
         img.save(str(settings.STATICFILES_DIRS[0]) + '/qr_codes/' + img_name)
     return HttpResponse("QR-codes generated!")
-
-# MIGRATE DB TO POSTGRES

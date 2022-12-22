@@ -1,8 +1,9 @@
 {% extends "index/index.html" %}
 {% block content %}
-{{ qr.hash }}
-<br>
-{{ qr.message }}
-<br>
-<a href="tel:{{ qr.user }}">Call me!</a>
+    <br>
+    {% if qr.message %}
+        {{ qr.message }}
+        <br>
+    {% endif %}
+    <a href="tel:{{ qr.user }}">Call me!</a>
 {% endblock content %}

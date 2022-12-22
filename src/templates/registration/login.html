@@ -1,15 +1,15 @@
 {% extends "index/index.html" %}
-{% block content %}
 {% load crispy_forms_tags %}
 
-<form method="post" style="width: 25em; align-content: center; margin: auto;">
-    {% csrf_token %}
-    {{ form|crispy }}
+{% block content %}
+    <form method="post" style="width: 25em; align-content: center; margin: auto;">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <br>
+        <button type="submit" value="Login">Login</button>
+    </form>
     <br>
-    <button type="submit" value="Login">Login</button>
-</form>
-<br>
-<p class="mb-0 text-white-50">Haven`t registered yet?<br><a href="{% url "core:registration" %}">You can do it
-    right now!</a></p>
-<br>
+    <p class="mb-0 text-white-50">Haven`t registered yet?<br><a href="{% url "core:registration" %}">You can do it
+        right now!</a></p>
+    <br>
 {% endblock content %}
