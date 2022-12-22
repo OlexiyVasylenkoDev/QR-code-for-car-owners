@@ -20,9 +20,9 @@
     <div class="hero-container">
         <div class="hero-container-center">
             {% if user.is_authenticated %}
-                <ul>
-                    <li style="list-style: none"><a href="{% url "core:logout" %}">Logout</a></li>
-                    <li style="list-style: none"><a href="{% url "core:profile" %}">Profile</a></li>
+                <ul style="list-style-type: none">
+                    <li><a href="{% url "core:logout" %}">Logout</a></li>
+                    <li><a href="{% url "core:profile" %}">Profile</a></li>
                 </ul>
             {% else %}
                 <a href="{% url "core:login" %}">Login</a>
