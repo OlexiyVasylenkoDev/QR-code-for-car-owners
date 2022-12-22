@@ -145,5 +145,5 @@ def generate_qr(request):
         data = f"https://{settings.ALLOWED_HOSTS[0]}/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
-        img.save(str(settings.STATIC_ROOT) + '/qr_codes/' + img_name)
+        img.save(str(settings.STATIC_URL) + '/qr_codes/' + img_name)
     return HttpResponse("QR-codes generated!")
