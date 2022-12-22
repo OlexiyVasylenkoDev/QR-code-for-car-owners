@@ -24,6 +24,10 @@ fake = Faker()
 class Index(TemplateView):
     template_name = "index/index.html"
 
+    def get(self, request, *args, **kwargs):
+        self.extra_context = {"qr_code": QRCode.objects.last()}
+        return self.render_to_response(self.extra_context)
+
 
 class QRCodeActivationView(FormView):
     model = QRCode
@@ -137,13 +141,15 @@ class Logout(LogoutView):
 
 @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
-    for i in range(1):
+    for i in range(10000):
         hash_uuid = uuid.uuid4
         hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")[21:]
         QRCode.objects.create(hash=hash, password=fake.password(length=10))
-        print(QRCode.objects.last())
+        print(i)
         data = f"https://{settings.ALLOWED_HOSTS[0]}/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
-        img.save(str(settings.STATIC_ROOT) + '/qr_codes/' + img_name)
+        img.save(str(settings.STATICFILES_DIRS[0]) + '/qr_codes/' + img_name)
     return HttpResponse("QR-codes generated!")
+
+# MIGRATE DB TO POSTGRES
