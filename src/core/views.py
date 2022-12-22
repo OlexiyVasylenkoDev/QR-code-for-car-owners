@@ -141,7 +141,7 @@ def generate_qr(request):
         hash_uuid = uuid.uuid4
         hash = Hasher.encode(self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())).replace("/", "_")[21:]
         QRCode.objects.create(hash=hash, password=fake.password(length=10))
-        data = f"http://127.0.0.1:3456/{hash}"
+        data = f"https://{settings.ALLOWED_HOSTS[0]}/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
         img.save(str(settings.STATIC_ROOT) + '/qr_codes/' + img_name)
