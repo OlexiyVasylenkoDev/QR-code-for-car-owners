@@ -5,9 +5,9 @@ from core.views import generate_qr, Login, Logout, Registration, QRCodeView, Pro
 app_name = "core"
 
 urlpatterns = [
-    path('', Index.as_view(), name="index"),
+    path('/', Index.as_view(), name="index"),
     path('login/', Login.as_view(), name="login"),
-    path("logout/", Logout.as_view(), name="logout"),
+    path('logout/', Logout.as_view(), name="logout"),
     path('registration/', Registration.as_view(), name="registration"),
     path('profile/', Profile.as_view(), name="profile"),
     path('generate_qr/', generate_qr, name="generate_qr"),
