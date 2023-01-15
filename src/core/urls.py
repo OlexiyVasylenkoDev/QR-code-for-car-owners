@@ -1,6 +1,6 @@
 from django.urls import path
 
-from core.views import generate_qr, Login, Logout, Registration, QRCodeView, Profile, Index
+from core.views import generate_qr, Login, Logout, Registration, QRCodeView, Profile, Index, UpdateProfile
 
 app_name = "core"
 
@@ -10,6 +10,8 @@ urlpatterns = [
     path('logout/', Logout.as_view(), name="logout"),
     path('registration/', Registration.as_view(), name="registration"),
     path('profile/', Profile.as_view(), name="profile"),
+    path('profile/update/<str:pk>', UpdateProfile.as_view(), name="update_profile"),
+
     path('generate_qr/', generate_qr, name="generate_qr"),
 
     path('qr/<str:hash>/', QRCodeView.as_view(), name="qr_code_view"),

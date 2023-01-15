@@ -7,4 +7,5 @@
             {{ qr_code.hash }}
         {% endfor %}
     {% endif %}
+    <a href="{% url "core:update_profile" user.pk %}">Update Profile</a>
 {% endblock content %}

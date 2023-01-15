@@ -1,14 +1,14 @@
 import uuid
 
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import CreateView, TemplateView, FormView
+from django.views.generic import CreateView, TemplateView, FormView, UpdateView
 from qrcode import make
 
 from core.forms import RegistrationForm, CustomAuthenticationForm, QRPasswordForm
@@ -82,6 +82,13 @@ class Profile(LoginRequiredMixin, TemplateView):
         self.extra_context = {"user": self.request.user,
                               "qr_codes": QRCode.objects.filter(user=self.request.user) or None}
         return self.render_to_response(self.extra_context)
+
+
+class UpdateProfile(LoginRequiredMixin, UpdateView):
+    model = get_user_model()
+    fields = ["phone", ]
+    template_name = "registration/update_user_form.html"
+    success_url = reverse_lazy("core:profile")
 
 
 class Registration(CreateView):
