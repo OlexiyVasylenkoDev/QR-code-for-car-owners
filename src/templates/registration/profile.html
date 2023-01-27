@@ -1,11 +1,36 @@
 {% extends "index/index.html" %}
 {% block content %}
-    {{ user.phone }}
+    <table>
+        <td>
+            <li>{{ user.phone }}</li>
+        </td>
+        <td>
+            <li><a href="{% url "core:update_profile" user.pk %}">Change</a></li>
+        </td>
+    </table>
     <br>
     {% if qr_codes %}
-        {% for qr_code in qr_codes %}
-            {{ qr_code.hash }}
-        {% endfor %}
+        <table>
+            <tr>My QR-Codes</tr>
+            {% for qr_code in qr_codes %}
+                <tr>
+                    <td>
+                        <li><a href="{% url "core:qr_code_view" qr_code.hash %}">
+                            {% if qr_code.message %}
+                                {{ qr_code.message }}
+                            {% else %}
+                                {{ qr_code.hash }}
+                            {% endif %}
+                        </a></li>
+                    </td>
+                    <td>
+                        <li><a href="{% url "core:update_qr_code" qr_code.hash %}">Update</a></li>
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </table>
     {% endif %}
-    <a href="{% url "core:update_profile" user.pk %}">Update Profile</a>
+{#    <a href="{% url "core:logout" %}">Logout</a>#}
+    {#    <a href="{% url "core:update_profile" user.pk %}">Change Phone Number</a>#}
 {% endblock content %}

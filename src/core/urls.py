@@ -1,6 +1,7 @@
 from django.urls import path
 
-from core.views import generate_qr, Login, Logout, Registration, QRCodeView, Profile, Index, UpdateProfile
+from core.views import generate_qr, Login, Logout, Registration, QRCodeView, Profile, Index, UpdateProfile, \
+    UpdateQRCode, qr_with_picture, multithreading
 
 app_name = "core"
 
@@ -13,6 +14,10 @@ urlpatterns = [
     path('profile/update/<str:pk>', UpdateProfile.as_view(), name="update_profile"),
 
     path('generate_qr/', generate_qr, name="generate_qr"),
+    path('multithreading/', multithreading, name="multithreading"),
 
     path('qr/<str:hash>/', QRCodeView.as_view(), name="qr_code_view"),
+    path('qr/update/<str:pk>/', UpdateQRCode.as_view(), name="update_qr_code"),
+    path('picture/', qr_with_picture, name="qr_with_picture"),
+
 ]

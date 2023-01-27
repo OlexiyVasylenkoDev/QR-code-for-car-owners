@@ -1,0 +1,20 @@
+FOR 100 QR-Codes
+workers = 10
+DATA_SIZE = 10
+
+42
+6.29
+
+FOR 1000 QR-Codes
+workers = 25
+DATA_SIZE = 40
+
+462
+61
+
+FOR 10000 QR-Codes
+workers = 50
+DATA_SIZE = 200
+
+4262
+678
