@@ -13,4 +13,4 @@ COPY /db.json ./db.json
 
 RUN python -m pip install --upgrade pip && pip install -r ./requirements.txt
 
-CMD ["python", "src/manage.py", "runserver", "${WSGI_PORT}"]
+CMD ["sh", "-c", "python src/manage.py runserver 0:$WSGI_PORT"]
