@@ -78,24 +78,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    ### DOCKER ###
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("POSTGRES_NAME_DOCKER"),
-        'USER': os.environ.get("POSTGRES_USER_DOCKER"),
-        'PASSWORD': os.environ.get("POSTGRES_PASSWORD_DOCKER"),
-        'HOST': os.environ.get("POSTGRES_HOST_DOCKER"),
-        'PORT': os.environ.get("POSTGRES_PORT_DOCKER"),
+        'NAME': os.environ.get("POSTGRES_NAME"),
+        'USER': os.environ.get("POSTGRES_USER"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
+        'HOST': os.environ.get("POSTGRES_HOST"),
+        'PORT': os.environ.get("POSTGRES_PORT"),
     }
-    ### LOCAL ###
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': os.environ.get("POSTGRES_NAME"),
-    #     'USER': os.environ.get("POSTGRES_USER"),
-    #     'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
-    #     'HOST': os.environ.get("POSTGRES_HOST"),
-    #     'PORT': os.environ.get("POSTGRES_PORT"),
-    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
