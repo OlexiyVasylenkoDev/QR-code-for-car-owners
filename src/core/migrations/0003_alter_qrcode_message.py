@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_qrcode_title_alter_qrcode_message'),
+        ("core", "0002_qrcode_title_alter_qrcode_message"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='qrcode',
-            name='message',
-            field=models.CharField(blank=True, default='Sorry for blocking you. BRB!', max_length=256, null=True, verbose_name='message'),
+            model_name="qrcode",
+            name="message",
+            field=models.CharField(
+                blank=True,
+                default="Sorry for blocking you. BRB!",
+                max_length=256,
+                null=True,
+                verbose_name="message",
+            ),
         ),
     ]

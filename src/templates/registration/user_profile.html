@@ -16,7 +16,7 @@
                 <tr>
                     <td>
                         <li><a href="{% url "core:qr_code_view" qr_code.hash %}">
-                            {% if qr_code.message %}
+                            {% if qr_code.title %}
                                 {{ qr_code.title }}
                             {% else %}
                                 {{ qr_code.hash }}

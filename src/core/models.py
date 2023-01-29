@@ -34,7 +34,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _("active"),
         default=True,
         help_text=_(
-            "Designates whether this user should be treated as active. " "Unselect this instead of deleting accounts."
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
         ),
     )
 
@@ -47,12 +48,29 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class QRCode(models.Model):
-    hash = models.CharField(_("hash"), max_length=256, primary_key=True, unique=True, null=False, blank=False)
+    hash = models.CharField(
+        _("hash"),
+        max_length=256,
+        primary_key=True,
+        unique=True,
+        null=False,
+        blank=False,
+    )
     password = models.CharField(_("password"), max_length=128)
     is_active = models.BooleanField(_("active"), default=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None, null=True, blank=True)
-    title = models.CharField(_("title"), max_length=50, default=None, null=True, blank=True)
-    message = models.CharField(_("message"), max_length=256, default="Sorry for blocking you. BRB!", null=True, blank=True)
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, default=None, null=True, blank=True
+    )
+    title = models.CharField(
+        _("title"), max_length=50, default=None, null=True, blank=True
+    )
+    message = models.CharField(
+        _("message"),
+        max_length=256,
+        default="Sorry for blocking you. BRB!",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.hash
