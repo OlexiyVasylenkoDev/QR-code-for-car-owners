@@ -39,7 +39,7 @@ class Index(TemplateView):
 class QRCodeActivationView(FormView):
     model = QRCode
     form_class = QRPasswordForm
-    template_name = "qr/check_qr.html"
+    template_name = "qr/qr_registration.html"
     success_url = reverse_lazy("core:login")
 
     def form_valid(self, form):
@@ -84,13 +84,13 @@ class QRCodeView(View):
 
 class UpdateQRCode(LoginRequiredMixin, UpdateView):
     model = QRCode
-    fields = ["message", ]
-    template_name = "qr/qrcode_form.html"
+    fields = ["title", "message"]
+    template_name = "qr/qr_update.html"
     success_url = reverse_lazy("core:profile")
 
 
 class Profile(LoginRequiredMixin, TemplateView):
-    template_name = "registration/profile.html"
+    template_name = "registration/user_profile.html"
 
     def get(self, request, *args, **kwargs):
         self.extra_context = {"user": self.request.user,
@@ -101,13 +101,13 @@ class Profile(LoginRequiredMixin, TemplateView):
 class UpdateProfile(LoginRequiredMixin, UpdateView):
     model = get_user_model()
     fields = ["phone", ]
-    template_name = "registration/update_user_form.html"
+    template_name = "registration/user_update.html"
     success_url = reverse_lazy("core:profile")
 
 
 class Registration(CreateView, QRCodeAssigner):
     form_class = RegistrationForm
-    template_name = "registration/user_form.html"
+    template_name = "registration/user_registration.html"
     success_url = reverse_lazy("core:profile")
 
     def get(self, request, *args, **kwargs):
@@ -135,6 +135,7 @@ class Registration(CreateView, QRCodeAssigner):
 
 class Login(LoginView, QRCodeAssigner):
     authentication_form = CustomAuthenticationForm
+    template_name = "registration/user_login.html"
     redirect_authenticated_user = True
 
     def form_valid(self, form):

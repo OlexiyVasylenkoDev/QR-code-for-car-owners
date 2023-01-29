@@ -23,13 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.environ.get("SECRET_KEY")
-SECRET_KEY = "@!p@n&#m8jd!-#4*+1%_z)=^)ivh1tjg#y-qml5g2@-^g(6w9e"
+SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = "@!p@n&#m8jd!-#4*+1%_z)=^)ivh1tjg#y-qml5g2@-^g(6w9e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["qr-code-for-car-owners.herokuapp.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["ec2-54-210-107-47.compute-1.amazonaws.com", "localhost", "127.0.0.1"]
 
 # Application definition
 
@@ -78,6 +78,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+    ### DOCKER ###
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': os.environ.get("POSTGRES_NAME_DOCKER"),
+    #     'USER': os.environ.get("POSTGRES_USER_DOCKER"),
+    #     'PASSWORD': os.environ.get("POSTGRES_PASSWORD_DOCKER"),
+    #     'HOST': os.environ.get("POSTGRES_HOST_DOCKER"),
+    #     'PORT': os.environ.get("POSTGRES_PORT_DOCKER"),
+    # }
+    ### LOCAL ###
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get("POSTGRES_NAME"),
@@ -102,8 +112,6 @@ AUTH_USER_MODEL = 'core.CustomUser'
 
 LOGIN_URL = "core:login"
 LOGIN_REDIRECT_URL = "core:profile"
-
-# CSRF_TRUSTED_ORIGINS = ['https://qr-code-for-car-owners.herokuapp.com']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -187,5 +195,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # }
 #
 # DEBUG_PROPAGATE_EXCEPTIONS = True
-
-# django_heroku.settings(locals())

@@ -51,7 +51,8 @@ class QRCode(models.Model):
     password = models.CharField(_("password"), max_length=128)
     is_active = models.BooleanField(_("active"), default=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None, null=True, blank=True)
-    message = models.CharField(_("message"), max_length=140, default=None, null=True, blank=True)
+    title = models.CharField(_("title"), max_length=50, default=None, null=True, blank=True)
+    message = models.CharField(_("message"), max_length=256, default="Sorry for blocking you. BRB!", null=True, blank=True)
 
     def __str__(self):
         return self.hash
