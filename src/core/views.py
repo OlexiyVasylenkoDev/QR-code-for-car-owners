@@ -155,7 +155,7 @@ class Logout(LogoutView):
     next_page = reverse_lazy("core:index")
 
 
-@user_passes_test(lambda user: user.is_superuser)
+# @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
     start_time = time.time()
     for i in range(DATA_SIZE):
