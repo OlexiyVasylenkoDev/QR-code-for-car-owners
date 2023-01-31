@@ -5,7 +5,6 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
@@ -56,7 +55,7 @@ class QRCode(models.Model):
         null=False,
         blank=False,
     )
-    password = models.CharField(_("password"), max_length=128)
+    # password = models.CharField(_("password"), max_length=128)
     is_active = models.BooleanField(_("active"), default=False)
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, default=None, null=True, blank=True

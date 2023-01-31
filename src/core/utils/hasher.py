@@ -3,7 +3,7 @@ import hashlib
 import math
 
 from django.contrib.auth.hashers import BasePasswordHasher
-from django.utils.crypto import pbkdf2, RANDOM_STRING_CHARS, get_random_string
+from django.utils.crypto import RANDOM_STRING_CHARS, get_random_string, pbkdf2
 
 
 class Hasher(BasePasswordHasher):

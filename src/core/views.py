@@ -5,27 +5,24 @@ import uuid
 from multiprocessing.pool import ThreadPool
 
 import qrcode
-from PIL import Image
 from django.conf import settings
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse_lazy, reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, TemplateView, FormView, UpdateView
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView
+from PIL import Image
 from qrcode import make
 
-from core.forms import RegistrationForm, CustomAuthenticationForm, QRPasswordForm
+from core.forms import (CustomAuthenticationForm, QRActivationForm,
+                        RegistrationForm)
 from core.models import QRCode
-
-# Create your views here.
-from faker import Faker
 from core.utils.hasher import Hasher
 from core.utils.qr_code_assigner import QRCodeAssigner
-
-fake = Faker()
+from core.utils.verify_qr_code import QRCodeVerifier
 
 
 class Index(TemplateView):
@@ -36,17 +33,19 @@ class Index(TemplateView):
         return self.render_to_response(self.extra_context)
 
 
-class QRCodeActivationView(FormView):
+class QRCodeActivationView(FormView, QRCodeVerifier):
     model = QRCode
-    form_class = QRPasswordForm
-    template_name = "qr/qr_registration.html"
+    form_class = QRActivationForm
+    template_name = "qr/qr_activation.html"
     success_url = reverse_lazy("core:login")
 
+    def get(self, request, *args, **kwargs):
+        self.verify_qr(self.request.user)
+        return super().get(self, request, *args, **kwargs)
+
     def form_valid(self, form):
-        self.request.session["qr"] = self.kwargs["hash"]
-        print(self.request.session.items())
         qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
-        if qr_code.password == form.data["password"]:
+        if self.code == form.data["code"]:
             if self.request.user.is_authenticated:
                 qr_code.is_active = True
                 qr_code.user = self.request.user
@@ -57,7 +56,7 @@ class QRCodeActivationView(FormView):
             return super().form_invalid(form)
 
 
-class QRCodeTemplateView(TemplateView):
+class QRCodeTemplateView(TemplateView, QRCodeVerifier):
     model = QRCode
     template_name = "qr/qr.html"
 
@@ -67,13 +66,20 @@ class QRCodeTemplateView(TemplateView):
 
 
 class QRCodeView(View):
+    def _add_hash_to_session(self):
+        self.request.session["qr"] = self.kwargs["hash"]
+        return self.request
+
     def get(self, request, *args, **kwargs):
         view = QRCodeTemplateView.as_view()
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         view = QRCodeActivationView.as_view()
-        return view(request, *args, **kwargs)
+        if self.request.user.is_authenticated:
+            return view(request, *args, **kwargs)
+        self._add_hash_to_session()
+        return HttpResponseRedirect(reverse_lazy("core:login"))
 
     def dispatch(self, request, *args, **kwargs):
         if QRCode.objects.get(hash=self.kwargs["hash"]).is_active:
@@ -108,6 +114,20 @@ class UpdateProfile(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("core:profile")
 
 
+class Login(LoginView, QRCodeAssigner):
+    authentication_form = CustomAuthenticationForm
+    template_name = "registration/user_login.html"
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        print(self.request.session.items())
+        login(self.request, form.get_user())
+        return self.assign_qr()
+
+        # print(self.request.session.items())
+        # return HttpResponseRedirect(self.get_success_url())
+
+
 class Registration(CreateView, QRCodeAssigner):
     form_class = RegistrationForm
     template_name = "registration/user_registration.html"
@@ -131,24 +151,9 @@ class Registration(CreateView, QRCodeAssigner):
 
         login(self.request, self.object)
 
-        self.assign_qr()
+        return self.assign_qr()
 
-        return HttpResponseRedirect(self.success_url)
-
-
-class Login(LoginView, QRCodeAssigner):
-    authentication_form = CustomAuthenticationForm
-    template_name = "registration/user_login.html"
-    redirect_authenticated_user = True
-
-    def form_valid(self, form):
-        print(self.request.session.items())
-        login(self.request, form.get_user())
-
-        self.assign_qr()
-
-        print(self.request.session.items())
-        return HttpResponseRedirect(self.get_success_url())
+        # return HttpResponseRedirect(self.success_url)
 
 
 class Logout(LogoutView):
@@ -163,7 +168,7 @@ def generate_qr(request):
         hash = Hasher.encode(
             self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())
         ).replace("/", "_")[21:]
-        QRCode.objects.create(hash=hash, password=fake.password(length=10))
+        QRCode.objects.create(hash=hash)
         print([threading.current_thread(), multiprocessing.current_process()])
         print(i)
         data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
@@ -175,8 +180,8 @@ def generate_qr(request):
     return HttpResponse("QR-codes generated!")
 
 
-workers = 10
-DATA_SIZE = 1
+workers = 50
+DATA_SIZE = 200
 
 
 def multithreading(request):

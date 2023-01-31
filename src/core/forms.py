@@ -1,20 +1,17 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    UserCreationForm,
-    UsernameField,
-)
+from django.contrib.auth.forms import (AuthenticationForm, UserCreationForm,
+                                       UsernameField)
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
+from django.forms import CharField, Form, ModelForm
 
 from core.models import QRCode
 
 
-class QRPasswordForm(ModelForm):
-    class Meta:
-        model = QRCode
-        fields = ["password"]
+class QRActivationForm(Form):
+    code = CharField(
+        label="Verification Code", widget=forms.TextInput(attrs={"autofocus": True})
+    )
 
 
 class RegistrationForm(UserCreationForm):

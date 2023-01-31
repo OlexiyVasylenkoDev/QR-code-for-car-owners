@@ -1,8 +1,8 @@
 import uuid
 
 import qrcode
-from PIL import Image
 from django.conf import settings
+from PIL import Image
 from qrcode import make
 
 from core.models import QRCode

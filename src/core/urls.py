@@ -1,18 +1,8 @@
 from django.urls import path
 
-from core.views import (
-    generate_qr,
-    Login,
-    Logout,
-    Registration,
-    QRCodeView,
-    Profile,
-    Index,
-    UpdateProfile,
-    UpdateQRCode,
-    qr_with_picture,
-    multithreading,
-)
+from core.views import (Index, Login, Logout, Profile, QRCodeView,
+                        Registration, UpdateProfile, UpdateQRCode, generate_qr,
+                        multithreading, qr_with_picture)
 
 app_name = "core"
 
