@@ -7,7 +7,6 @@ from qrcode import make
 
 from core.models import QRCode
 from core.utils.hasher import Hasher
-from core.views import fake
 
 
 def generate_qr():
@@ -16,14 +15,12 @@ def generate_qr():
         hash = Hasher.encode(
             self=Hasher(), password=hash_uuid, salt=Hasher.salt(self=Hasher())
         ).replace("/", "_")[21:]
-        QRCode.objects.create(hash=hash, password=fake.password(length=10))
+        QRCode.objects.create(hash=hash)
         print(i)
         data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
-        img.save(
-            str("AAAAAAAAAAA" + settings.STATICFILES_DIRS[0]) + "/qr_codes/" + img_name
-        )
+        img.save(str(settings.STATICFILES_DIRS[0]) + "/qr_codes/" + img_name)
     return "Success!"
 
 

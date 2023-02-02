@@ -5,6 +5,13 @@
         {% csrf_token %}
         {{ form|crispy }}
         <br>
+        <!>
+        <!>
+        <!- ADD TIMER FOR SENDING AN SMS ->
+        <!>
+        <!>
+        <button><a href="{% url "core:send_verification_sms" %}">Send Verification code</a></button>
+        <br><br>
         <button type="submit">Register</button>
     </form>
 {% endblock content %}

@@ -4,25 +4,22 @@ import time
 import uuid
 from multiprocessing.pool import ThreadPool
 
-import qrcode
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, FormView, TemplateView, UpdateView
-from PIL import Image
 from qrcode import make
 
-from core.forms import (CustomAuthenticationForm, QRActivationForm,
-                        RegistrationForm)
+from core.forms import CustomAuthenticationForm, RegistrationForm, VerificationForm
 from core.models import QRCode
 from core.utils.hasher import Hasher
 from core.utils.qr_code_assigner import QRCodeAssigner
-from core.utils.verify_qr_code import QRCodeVerifier
+from core.utils.verify_qr_code import Verifier
 
 
 class Index(TemplateView):
@@ -33,30 +30,57 @@ class Index(TemplateView):
         return self.render_to_response(self.extra_context)
 
 
-class QRCodeActivationView(FormView, QRCodeVerifier):
-    model = QRCode
-    form_class = QRActivationForm
-    template_name = "qr/qr_activation.html"
+class VerificationView(FormView, Verifier):
+    form_class = VerificationForm
+    template_name = "index/verification.html"
     success_url = reverse_lazy("core:login")
 
     def get(self, request, *args, **kwargs):
-        self.verify_qr(self.request.user)
-        return super().get(self, request, *args, **kwargs)
+        if "redirect_to_verification" in request.session:
+            return super().get(self, request, *args, **kwargs)
+        else:
+            raise Http404
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context.update({"my_message": "Something went wrong"})
+        return self.render_to_response(context)
 
     def form_valid(self, form):
-        qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
-        if self.code == form.data["code"]:
-            if self.request.user.is_authenticated:
+        # if "redirect_to_verification" in self.request.session:
+        if self.request.user.is_authenticated:
+            qr_code = QRCode.objects.get(hash__exact=self.kwargs["hash"])
+            if self.request.session.get("verification_code") == form.data["code"]:
                 qr_code.is_active = True
                 qr_code.user = self.request.user
                 qr_code.save()
-            return super().form_valid(form)
+                return super().form_valid(form)
+            else:
+                # raise ValidationError("User with this phone number already exists.")
+                # """Add message for wrong password"""
+                return super().form_invalid(form)
         else:
-            """Add message for wrong password"""
-            return super().form_invalid(form)
+            if self.request.session.get("verification_code") == form.data["code"]:
+                registered_user = get_user_model().objects.get(
+                    phone=self.request.session.get("user")
+                )
+                registered_user.is_active = True
+                registered_user.save()
+
+                login(self.request, registered_user)
+
+                # return self.assign_qr()
+                return super().form_valid(form)
+            else:
+                # raise ValidationError("User with this phone number already exists.")
+                # """Add message for wrong password"""
+                return super().form_invalid(form)
+
+    # else:
+    #     raise 404
 
 
-class QRCodeTemplateView(TemplateView, QRCodeVerifier):
+class TemplateView(TemplateView):
     model = QRCode
     template_name = "qr/qr.html"
 
@@ -71,14 +95,15 @@ class QRCodeView(View):
         return self.request
 
     def get(self, request, *args, **kwargs):
-        view = QRCodeTemplateView.as_view()
+        view = TemplateView.as_view()
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        view = QRCodeActivationView.as_view()
+        self._add_hash_to_session()
+        self.request.session["redirect_to_verification"] = True
+        view = VerificationView.as_view()
         if self.request.user.is_authenticated:
             return view(request, *args, **kwargs)
-        self._add_hash_to_session()
         return HttpResponseRedirect(reverse_lazy("core:login"))
 
     def dispatch(self, request, *args, **kwargs):
@@ -95,7 +120,7 @@ class UpdateQRCode(LoginRequiredMixin, UpdateView):
 
 
 class Profile(LoginRequiredMixin, TemplateView):
-    template_name = "registration/user_profile.html"
+    template_name = "user/user_profile.html"
 
     def get(self, request, *args, **kwargs):
         self.extra_context = {
@@ -110,17 +135,16 @@ class UpdateProfile(LoginRequiredMixin, UpdateView):
     fields = [
         "phone",
     ]
-    template_name = "registration/user_update.html"
+    template_name = "user/user_update.html"
     success_url = reverse_lazy("core:profile")
 
 
 class Login(LoginView, QRCodeAssigner):
     authentication_form = CustomAuthenticationForm
-    template_name = "registration/user_login.html"
+    template_name = "user/user_login.html"
     redirect_authenticated_user = True
 
     def form_valid(self, form):
-        print(self.request.session.items())
         login(self.request, form.get_user())
         return self.assign_qr()
 
@@ -130,7 +154,7 @@ class Login(LoginView, QRCodeAssigner):
 
 class Registration(CreateView, QRCodeAssigner):
     form_class = RegistrationForm
-    template_name = "registration/user_registration.html"
+    template_name = "user/user_registration.html"
     success_url = reverse_lazy("core:profile")
 
     def get(self, request, *args, **kwargs):
@@ -139,28 +163,27 @@ class Registration(CreateView, QRCodeAssigner):
         return super().get(request, *args, **kwargs)
 
     def form_invalid(self, form):
-        print(self.request.session.items())
-        self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        print(self.request.session.items())
-
+        self.request.session["redirect_to_verification"] = True
+        if "qr" not in self.request.session.keys():
+            self.object = form.save(commit=False)
+            self.object.is_active = False
+            self.object.save()
+            self.request.session["user"] = str(self.object)
+            return HttpResponseRedirect(reverse_lazy("core:verification"))
         self.object = form.save(commit=True)
         self.object.is_active = True
         self.object.save()
-
         login(self.request, self.object)
-
         return self.assign_qr()
-
-        # return HttpResponseRedirect(self.success_url)
 
 
 class Logout(LogoutView):
     next_page = reverse_lazy("core:index")
 
 
-# @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
     start_time = time.time()
     for i in range(DATA_SIZE):
@@ -180,10 +203,11 @@ def generate_qr(request):
     return HttpResponse("QR-codes generated!")
 
 
-workers = 50
-DATA_SIZE = 200
+workers = 10
+DATA_SIZE = 1
 
 
+@user_passes_test(lambda user: user.is_superuser)
 def multithreading(request):
     with ThreadPool(workers) as pool:
         input_data = [DATA_SIZE // workers for _ in range(workers)]
@@ -191,28 +215,12 @@ def multithreading(request):
     return HttpResponse("QR-codes generated with multithreading!")
 
 
-def qr_with_picture(request):
-    Logo_link = "walkie.png"
-    logo = Image.open(str(settings.STATICFILES_DIRS[0]) + "/img/" + Logo_link)
-    # taking base width
-    basewidth = 100
-    # adjust image size
-    wpercent = basewidth / float(logo.size[0])
-    hsize = int((float(logo.size[1]) * float(wpercent)))
-    logo = logo.resize((basewidth, hsize), Image.ANTIALIAS)
-    QRcode = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
-    # taking url or text
-    url = "https://www.geeksforgeeks.org/"
-    # adding URL or text to QRcode
-    QRcode.add_data(url)
-    # generating QR code
-    QRcode.make()
-    # taking color name from user
-    # adding color to QR code
-    QRimg = QRcode.make_image(fill_color="black", back_color="white").convert("RGB")
-    # set size of QR code
-    pos = ((QRimg.size[0] - logo.size[0]) // 2, (QRimg.size[1] - logo.size[1]) // 2)
-    QRimg.paste(logo, pos)
-    # save the QR code generated
-    QRimg.save(str(settings.STATICFILES_DIRS[0]) + "/qr_codes/" + "walkie.png")
-    print("QR code generated!")
+def send_verification_sms(request):
+    if "redirect_to_verification" in request.session:
+        if request.session.get("qr"):
+            Verifier(request).send_verification_code(request.user)
+        else:
+            Verifier(request).send_verification_code(request.session.get("user"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    else:
+        raise Http404
