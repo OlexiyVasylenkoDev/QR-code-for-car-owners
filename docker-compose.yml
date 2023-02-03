@@ -5,13 +5,10 @@ services:
     build: ./
     container_name: qr-code
     working_dir: /qr-code
-#    command:
-#      - ./start_server.sh
     ports:
       - ${LOCAL_PORT}:${WSGI_PORT}
     volumes:
       - static_content:/qr-code/src/static/
-      - media_content:/qr-code/src/media/
       - ./src:/qr-code/src
     restart: always
     env_file:
@@ -25,41 +22,11 @@ services:
       - "443:443"
     volumes:
       - static_content:/qr-code/src/static/
-      - media_content:/qr-code/src/media/
       - ./nginx:/etc/nginx/conf.d
     env_file:
       - .env
     depends_on:
       - backend
 
-  postgres:
-    image: postgres:12.0
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - local_postgres_data:/var/lib/postgresql/data
-      - local_postgres_data_backups:/backups
-    restart: always
-    env_file:
-      - .env
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: postgres_admin
-    ports:
-      - "5000:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    env_file:
-      - .env
-    restart: on-failure
-    depends_on:
-      - postgres
-
 volumes:
   static_content: { }
-  media_content: { }
-  local_postgres_data: { }
-  local_postgres_data_backups: { }
-  pgadmin_data: { }
