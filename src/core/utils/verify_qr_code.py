@@ -16,12 +16,8 @@ class Verifier:
         list_of_nums = [i for i in range(10)]
         code = "".join([str(i) for i in random.choices(list_of_nums, k=8)])
         self.request.session["verification_code"] = code
-        # message = self.CLIENT.messages.create(
-        #     body=f'Your verification code is: {code}',
-        #     from_=os.environ['TWILIO_PHONE_NUMBER'],
-        #     to=phone_number
-        # )
-        # print(message.sid)
-        # print(self.request.GET)
-        print(f"SMS to: {phone_number}\nText: {code}")
-        # return self.request
+        message = self.CLIENT.messages.create(
+            body=f'Your verification code is: {code}',
+            from_=os.environ['TWILIO_PHONE_NUMBER'],
+            to=phone_number
+        )

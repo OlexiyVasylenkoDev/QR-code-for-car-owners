@@ -184,6 +184,7 @@ class Logout(LogoutView):
     next_page = reverse_lazy("core:index")
 
 
+# @user_passes_test(lambda user: user.is_superuser)
 def generate_qr(request):
     start_time = time.time()
     for i in range(DATA_SIZE):
@@ -197,14 +198,14 @@ def generate_qr(request):
         data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
-        img.save(str(settings.STATICFILES_DIRS[0]) + "/qr_codes/" + img_name)
+        img.save(str(settings.STATIC_ROOT) + "/qr_codes/" + img_name)
     final_time = time.time()
     print(f"Estimated time: {final_time - start_time} seconds.")
     return HttpResponse("QR-codes generated!")
 
 
 workers = 10
-DATA_SIZE = 1
+DATA_SIZE = 5
 
 
 @user_passes_test(lambda user: user.is_superuser)
