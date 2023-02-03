@@ -5,15 +5,32 @@ services:
     build: ./
     container_name: qr-code
     working_dir: /qr-code
+#    command:
+#      - ./start_server.sh
     ports:
       - ${LOCAL_PORT}:${WSGI_PORT}
     volumes:
-      - static_content:/qr-code-scanner/src/static/
-      - media_content:/qr-code-scanner/src/media/
-      - ./src:/qr-code-scanner/src
+      - static_content:/qr-code/src/static/
+      - media_content:/qr-code/src/media/
+      - ./src:/qr-code/src
     restart: always
     env_file:
       - .env
+
+  nginx:
+    image: nginx:1.19
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_content:/qr-code/src/static/
+      - media_content:/qr-code/src/media/
+      - ./nginx:/etc/nginx/conf.d
+    env_file:
+      - .env
+    depends_on:
+      - backend
 
   postgres:
     image: postgres:12.0

@@ -9,8 +9,11 @@ WORKDIR /qr-code
 
 COPY /src ./src
 COPY /requirements.txt ./requirements.txt
-COPY /db.json ./db.json
+#COPY /db.json ./db.json
 
 RUN python -m pip install --upgrade pip && pip install -r ./requirements.txt
 
-CMD ["sh", "-c", "python src/manage.py runserver 0:$WSGI_PORT"]
+CMD ["sh", "-c", "python src/manage.py makemigrations && \
+                  python src/manage.py migrate && \
+                  python src/manage.py collectstatic --noinput && \
+                  python src/manage.py runserver 0:$WSGI_PORT"]

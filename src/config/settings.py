@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-# import django_heroku
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECRET_KEY = "@!p@n&#m8jd!-#4*+1%_z)=^)ivh1tjg#y-qml5g2@-^g(6w9e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["ec2-54-210-107-47.compute-1.amazonaws.com", "localhost", "127.0.0.1"]
 
@@ -46,7 +45,6 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -138,51 +136,11 @@ USE_TZ = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-# WHITENOISE_USE_FINDERS = True
-# WHITENOISE_MANIFEST_STRICT = False
-# WHITENOISE_ALLOW_ALL_ORIGINS = True
-#
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-#                        'pathname=%(pathname)s lineno=%(lineno)s ' +
-#                        'funcname=%(funcName)s %(message)s'),
-#             'datefmt': '%Y-%m-%d %H:%M:%S'
-#         },
-#         'simple': {
-#             'format': '%(levelname)s %(message)s'
-#         }
-#     },
-#     'handlers': {
-#         'null': {
-#             'level': 'DEBUG',
-#             'class': 'logging.NullHandler',
-#         },
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'verbose'
-#         }
-#     },
-#     'loggers': {
-#         'testlogger': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#         }
-#     }
-# }
-#
-# DEBUG_PROPAGATE_EXCEPTIONS = True
