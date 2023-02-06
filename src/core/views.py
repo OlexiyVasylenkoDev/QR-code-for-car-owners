@@ -195,7 +195,7 @@ def generate_qr(request):
         QRCode.objects.create(hash=hash)
         print([threading.current_thread(), multiprocessing.current_process()])
         print(i)
-        data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
+        data = f"http://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
         img.save(str(settings.STATIC_ROOT) + "/qr_codes/" + img_name)

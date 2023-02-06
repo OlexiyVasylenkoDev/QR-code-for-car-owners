@@ -17,7 +17,7 @@ def generate_qr():
         ).replace("/", "_")[21:]
         QRCode.objects.create(hash=hash)
         print(i)
-        data = f"https://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
+        data = f"http://{settings.ALLOWED_HOSTS[0]}/qr/{hash}"
         img = make(data)
         img_name = f"{hash}.png"
         img.save(str(settings.STATICFILES_DIRS[0]) + "/qr_codes/" + img_name)
